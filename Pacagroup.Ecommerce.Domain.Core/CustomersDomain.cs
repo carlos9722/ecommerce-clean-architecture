@@ -1,5 +1,6 @@
 using Pacagroup.Ecommerce.Domain.Entity;
 using Pacagroup.Ecommerce.Domain.Interface;
+using Pacagroup.Ecommerce.Infrastructure.Interface;
 
 namespace Pacagroup.Ecommerce.Domain.Core
 {
@@ -10,36 +11,50 @@ namespace Pacagroup.Ecommerce.Domain.Core
     public class CustomersDomain : ICustomersDomain
     {
         /// <summary>
+        /// Unit of Work utilizado para acceder a los repositorios
+        /// de la capa de infraestructura.
+        /// </summary>
+        private readonly IUnitOfWork _unitOfWork;
+
+        /// <summary>
+        /// Constructor de CustomersDomain.
+        /// Recibe IUnitOfWork mediante inyección de dependencias
+        /// y lo guarda para utilizar los repositorios disponibles.
+        /// </summary>
+        /// <param name="unitOfWork">
+        /// Unit of Work que proporciona acceso a los repositorios.
+        /// </param>
+        public CustomersDomain(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
+        /// <summary>
         /// Elimina un cliente utilizando su identificador.
         /// </summary>
         /// <param name="customerId">
         /// Identificador único del cliente que se desea eliminar.
         /// </param>
         /// <returns>
-        /// Un Task que devolverá true si la eliminación se realiza correctamente;
+        /// Un Task que devuelve true si la eliminación fue exitosa;
         /// de lo contrario, false.
         /// </returns>
-        /// <remarks>
-        /// NotImplementedException indica que la lógica todavía no ha sido implementada.
-        /// </remarks>
-        public Task<bool> DeleteAsync(string customerId)
+        public async Task<bool> DeleteAsync(string customerId)
         {
-            throw new NotImplementedException();
+            // Accede al repositorio de clientes a través del Unit of Work.
+            return await _unitOfWork.Customers.DeleteAsync(customerId);
         }
 
         /// <summary>
         /// Obtiene todos los clientes disponibles.
         /// </summary>
         /// <returns>
-        /// Un Task que devolverá una colección de clientes.
+        /// Un Task que devuelve una colección de clientes.
         /// </returns>
-        /// <remarks>
-        /// IEnumerable permite recorrer la colección sin depender
-        /// de un tipo concreto como List<Customer>.
-        /// </remarks>
-        public Task<IEnumerable<Customer>> GetAllAsync()
+        public async Task<IEnumerable<Customer>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            // Solicita al repositorio la lista de clientes.
+            return await _unitOfWork.Customers.GetAllAsync();
         }
 
         /// <summary>
@@ -49,11 +64,12 @@ namespace Pacagroup.Ecommerce.Domain.Core
         /// Identificador único del cliente que se desea consultar.
         /// </param>
         /// <returns>
-        /// Un Task que devolverá el cliente encontrado.
+        /// Un Task que devuelve el cliente encontrado.
         /// </returns>
-        public Task<Customer> GetAsync(string customerId)
+        public async Task<Customer> GetAsync(string customerId)
         {
-            throw new NotImplementedException();
+            // Consulta el cliente utilizando el repositorio.
+            return await _unitOfWork.Customers.GetAsync(customerId);
         }
 
         /// <summary>
@@ -63,27 +79,29 @@ namespace Pacagroup.Ecommerce.Domain.Core
         /// Objeto Customer que contiene los datos del nuevo cliente.
         /// </param>
         /// <returns>
-        /// Un Task que devolverá true si el registro se realiza correctamente;
+        /// Un Task que devuelve true si el registro fue exitoso;
         /// de lo contrario, false.
         /// </returns>
-        public Task<bool> InsertAsync(Customer customer)
+        public async Task<bool> InsertAsync(Customer customer)
         {
-            throw new NotImplementedException();
+            // Envía el cliente al repositorio para realizar la inserción.
+            return await _unitOfWork.Customers.InsertAsync(customer);
         }
 
         /// <summary>
         /// Actualiza la información de un cliente existente.
         /// </summary>
         /// <param name="customer">
-        /// Objeto Customer que contiene los datos actualizados del cliente.
+        /// Objeto Customer que contiene los datos actualizados.
         /// </param>
         /// <returns>
-        /// Un Task que devolverá true si la actualización se realiza correctamente;
+        /// Un Task que devuelve true si la actualización fue exitosa;
         /// de lo contrario, false.
         /// </returns>
-        public Task<bool> UpdateAsync(Customer customer)
+        public async Task<bool> UpdateAsync(Customer customer)
         {
-            throw new NotImplementedException();
+            // Envía el cliente al repositorio para realizar la actualización.
+            return await _unitOfWork.Customers.UpdateAsync(customer);
         }
     }
 }

@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.86" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Pacagroup.Ecommerce.Infrastructure.Data\Pacagroup.Ecommerce.Infrastructure.Data.csproj" />
+    <ProjectReference Include="..\Pacagroup.Ecommerce.Infrastructure.Interface\Pacagroup.Ecommerce.Infrastructure.Interface.csproj" />
+  </ItemGroup>
+
 </Project>
