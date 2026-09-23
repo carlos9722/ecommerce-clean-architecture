@@ -69,9 +69,10 @@ namespace Pacagroup.Ecommerce.Infrastructure.Repository
             var parameters = new DynamicParameters();
             parameters.Add("CustomerID", customerId);
 
-            // QuerySingleAsync obtiene un único registro y lo convierte
-            // automáticamente en un objeto Customer.
-            var customer = await connection.QuerySingleAsync<Customer>(
+
+            // Busca un único registro mediante un procedimiento almacenado y lo mapea a Customer.
+            // Si el registro existe lo devuelve; si no existe, devuelve null de forma segura.
+            var customer = await connection.QuerySingleOrDefaultAsync<Customer>(
                 query,
                 param: parameters,
                 commandType: CommandType.StoredProcedure);
