@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Pacagroup.Ecommerce.Application.DTO;
 using Pacagroup.Ecommerce.Application.Interface;
+using Pacagroup.Ecommerce.Transversal.Common;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 
 namespace Pacagroup.Ecommerce.Services.WebApi.Controllers
@@ -14,6 +16,7 @@ namespace Pacagroup.Ecommerce.Services.WebApi.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [SwaggerTag("Operaciones relacionadas con Clientes")]
     public class CustomersController : ControllerBase
     {
         /// <summary>
@@ -50,6 +53,10 @@ namespace Pacagroup.Ecommerce.Services.WebApi.Controllers
         /// 500 InternalServerError si ocurre un error durante la operación.
         /// </returns>
         [HttpPost("InsertAsync")]
+        [SwaggerOperation(
+        Summary = "Registra un Cliente",
+        Description = "Retorna un objeto generico con el resultado de la operación")]
+        [SwaggerResponse(200, "Cliente registrado", typeof(Response<bool>))]
         public async Task<IActionResult> InsertAsync(
             [FromBody] CustomerDto customerDto)
         {
@@ -86,6 +93,10 @@ namespace Pacagroup.Ecommerce.Services.WebApi.Controllers
         /// Resultado HTTP de la operación.
         /// </returns>
         [HttpPut("UpdateAsync/{customerId}")]
+        [SwaggerOperation(
+        Summary = "Actualiza un Cliente en función a su ID",
+        Description = "Retorna un objeto generico con el resultado de la operación")]
+        [SwaggerResponse(200, "Cliente actualizado", typeof(Response<bool>))]
         public async Task<IActionResult> UpdateAsync(
             [FromRoute] string customerId,
             [FromBody] CustomerDto customerDto)
@@ -124,6 +135,10 @@ namespace Pacagroup.Ecommerce.Services.WebApi.Controllers
         /// Resultado HTTP de la operación.
         /// </returns>
         [HttpDelete("DeleteAsync/{customerId}")]
+        [SwaggerOperation(
+        Summary = "Elimina un Cliente en función a su ID",
+        Description = "Retorna un objeto generico con el resultado de la operación")]
+        [SwaggerResponse(200, "Cliente eliminado", typeof(Response<bool>))]
         public async Task<IActionResult> DeleteAsync(
             [FromRoute] string customerId)
         {
@@ -155,6 +170,10 @@ namespace Pacagroup.Ecommerce.Services.WebApi.Controllers
         /// Resultado HTTP que contiene el cliente encontrado.
         /// </returns>
         [HttpGet("GetAsync/{customerId}")]
+        [SwaggerOperation(
+        Summary = "Obtiene un Cliente en función a su ID",
+        Description = "Retorna un objeto generico con el resultado de la operación")]
+        [SwaggerResponse(200, "Cliente encontrado", typeof(Response<CustomerDto>))]
         public async Task<IActionResult> GetAsync(
             [FromRoute] string customerId)
         {
@@ -183,6 +202,10 @@ namespace Pacagroup.Ecommerce.Services.WebApi.Controllers
         /// Resultado HTTP que contiene la colección de clientes.
         /// </returns>
         [HttpGet("GetAllAsync")]
+        [SwaggerOperation(
+        Summary = "Lista la totalidad de Clientes",
+        Description = "Retorna un objeto generico con el resultado de la operación")]
+        [SwaggerResponse(200, "Clientes encontrados", typeof(Response<IEnumerable<CustomerDto>>))]
         public async Task<IActionResult> GetAllAsync()
         {
             // Solicita a Application todos los clientes.
