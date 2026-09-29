@@ -8,6 +8,8 @@ namespace Pacagroup.Ecommerce.Application.Main.Commons
     /// Configura las reglas de mapeo utilizadas por AutoMapper
     /// para convertir objetos entre las entidades del Domain
     /// y los DTOs de la capa Application.
+    ///
+    /// Aquí se define cómo una clase puede convertirse en otra.
     /// </summary>
     public class MappingsProfile : Profile
     {
@@ -18,29 +20,83 @@ namespace Pacagroup.Ecommerce.Application.Main.Commons
         public MappingsProfile()
         {
             /*
-             * Configura el mapeo entre Customer y CustomerDto.
+             * ============================================================
+             * MAPEO CUSTOMER ↔ CUSTOMERDTO
+             * ============================================================
              *
-             * Customer → CustomerDto
-             * CustomerDto → Customer
+             * Define la conversión entre:
              *
-             * ReverseMap() permite realizar el mapeo en ambos sentidos.
+             * Customer      → CustomerDto
+             * CustomerDto   → Customer
              *
-             * Como ambas clases tienen propiedades con los mismos nombres
-             * y tipos compatibles, AutoMapper puede realizar el mapeo
-             * automáticamente.
+             * ReverseMap() habilita el mapeo en ambos sentidos.
+             *
+             * Como ambas clases tienen propiedades con los mismos
+             * nombres y tipos compatibles, AutoMapper puede realizar
+             * el mapeo automáticamente.
              */
             CreateMap<Customer, CustomerDto>().ReverseMap();
 
+
             /*
-             * EJEMPLO DE MAPEO MANUAL:
+             * ============================================================
+             * MAPEO USER ↔ SIGNUPDTO
+             * ============================================================
+             *
+             * Define la conversión entre:
+             *
+             * User       → SignUpDto
+             * SignUpDto  → User
+             *
+             * ReverseMap() permite realizar el mapeo en ambos sentidos.
+             *
+             * Por ejemplo:
+             *
+             * SignUpDto → User
+             *
+             * Esto permite convertir los datos recibidos durante
+             * el registro del usuario en una entidad User.
+             *
+             * Las propiedades que coinciden por nombre y tipo son
+             * mapeadas automáticamente por AutoMapper.
+             *
+             * IMPORTANTE:
+             *
+             * SignUpDto contiene Password, mientras que User contiene
+             * PasswordHash.
+             *
+             * Como los nombres son diferentes:
+             *
+             * SignUpDto.Password
+             *          ↓
+             *      NO se mapea automáticamente
+             *          ↓
+             * User.PasswordHash
+             *
+             * Por lo tanto, el PasswordHash debe establecerse
+             * posteriormente mediante el proceso de hashing de contraseña.
+             */
+            CreateMap<User, SignUpDto>().ReverseMap();
+
+
+            /*
+             * ============================================================
+             * EJEMPLO DE MAPEO MANUAL
+             * ============================================================
              *
              * La siguiente configuración realiza el mismo mapeo,
              * pero indicando explícitamente qué propiedad de origen
              * corresponde a cada propiedad de destino.
              *
              * Esto normalmente NO es necesario cuando las propiedades
-             * tienen el mismo nombre y tipo, pero resulta útil cuando
-             * los nombres son diferentes o se necesita una transformación.
+             * tienen el mismo nombre y tipo.
+             *
+             * Es útil cuando:
+             *
+             * - Los nombres de las propiedades son diferentes.
+             * - Se necesita transformar un valor.
+             * - Queremos controlar explícitamente cómo se realiza
+             *   determinada conversión.
              *
              * CreateMap<Customer, CustomerDto>().ReverseMap()
              *     .ForMember(
@@ -78,6 +134,7 @@ namespace Pacagroup.Ecommerce.Application.Main.Commons
              *         source => source.MapFrom(src => src.Fax))
              *     .ReverseMap();
              *
+             *
              * Ejemplo:
              *
              * destination => destination.CustomerId
@@ -87,6 +144,7 @@ namespace Pacagroup.Ecommerce.Application.Main.Commons
              *     → propiedad de donde obtenemos el valor.
              *
              * En este caso:
+             *
              * Customer.CustomerId → CustomerDto.CustomerId
              *
              * Como los nombres coinciden, AutoMapper puede hacerlo

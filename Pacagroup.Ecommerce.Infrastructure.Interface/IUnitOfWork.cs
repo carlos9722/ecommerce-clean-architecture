@@ -2,20 +2,44 @@
 {
     /// <summary>
     /// Define el contrato del Unit of Work.
-    /// Se encarga de centralizar y proporcionar acceso a los diferentes
-    /// repositorios utilizados durante una operación.
-    /// 
-    /// IDisposable indica que la implementación podrá liberar recursos
-    /// cuando ya no sean necesarios.
+    ///
+    /// El Unit of Work centraliza y proporciona acceso
+    /// a los diferentes repositorios de la aplicación.
+    ///
+    /// De esta forma, las capas superiores pueden acceder
+    /// a los repositorios a través de un único punto de entrada.
+    ///
+    /// IDisposable indica que la implementación del Unit of Work
+    /// puede liberar recursos cuando ya no sean necesarios.
     /// </summary>
     public interface IUnitOfWork : IDisposable
     {
         /// <summary>
         /// Proporciona acceso al repositorio de clientes.
-        /// 
-        /// Al ser una propiedad de tipo ICustomersRepository,
-        /// permite utilizar sus operaciones CRUD desde el Unit of Work.
+        ///
+        /// ICustomersRepository es el contrato que define
+        /// las operaciones disponibles para trabajar con Customer.
+        ///
+        /// El get permite obtener el repositorio desde el Unit of Work,
+        /// pero no permite asignarlo directamente desde fuera.
         /// </summary>
         ICustomersRepository Customers { get; }
+
+
+        /// <summary>
+        /// Proporciona acceso al repositorio de usuarios.
+        ///
+        /// IUsersRepository es el contrato que define
+        /// las operaciones disponibles para trabajar con User.
+        ///
+        /// Por ejemplo:
+        /// - Buscar un usuario por email.
+        /// - Crear un usuario.
+        /// - Comprobar una contraseña.
+        ///
+        /// El get permite obtener el repositorio desde el Unit of Work,
+        /// pero no permite reemplazarlo directamente desde fuera.
+        /// </summary>
+        IUsersRepository Users { get; }
     }
 }
