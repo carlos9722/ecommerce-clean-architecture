@@ -4,6 +4,7 @@ using Pacagroup.Ecommerce.Application.Interface;
 using Pacagroup.Ecommerce.Domain.Entity;
 using Pacagroup.Ecommerce.Domain.Interface;
 using Pacagroup.Ecommerce.Transversal.Common;
+using Pacagroup.Ecommerce.Transversal.Logging;
 
 namespace Pacagroup.Ecommerce.Application.Main
 {
@@ -54,6 +55,16 @@ namespace Pacagroup.Ecommerce.Application.Main
         private readonly IMapper _mapper;
 
 
+        /*
+         * Servicio de logging utilizado para registrar información
+         * relacionada con errores y eventos de esta clase.
+         *
+         * IAppLogger<AuthApplication> indica que el logger está
+         * asociado específicamente con AuthApplication.
+         */
+        private readonly IAppLogger<AuthApplication> _logger;
+
+
         /// <summary>
         /// Constructor de la clase.
         ///
@@ -69,14 +80,20 @@ namespace Pacagroup.Ecommerce.Application.Main
         /// <param name="mapper">
         /// Servicio de AutoMapper para convertir DTOs y entidades.
         /// </param>
+        /// <param name="logger">
+        /// Servicio utilizado para registrar errores y eventos
+        /// relacionados con AuthApplication.
+        /// </param>
         public AuthApplication(
             IUsersDomain usersDomain,
             IJwtService jwtService,
-            IMapper mapper)
+            IMapper mapper,
+            IAppLogger<AuthApplication> logger)
         {
             _usersDomain = usersDomain;
             _jwtService = jwtService;
             _mapper = mapper;
+            _logger = logger;
         }
 
 
@@ -124,6 +141,10 @@ namespace Pacagroup.Ecommerce.Application.Main
                 {
                     response.Message =
                         "Email no existe o no se encuentra registrado";
+
+                    // Registramos en el log el motivo por el que
+                    // no fue posible validar el correo electrónico.
+                    _logger.LogError("Failed to validate email. Error: {Message}", response.Message);
 
                     return response;
                 }

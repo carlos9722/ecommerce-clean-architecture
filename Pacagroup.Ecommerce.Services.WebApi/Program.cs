@@ -3,6 +3,8 @@ using Pacagroup.Ecommerce.Infrastructure.Repository;
 using Pacagroup.Ecommerce.Application.Main;
 using Pacagroup.Ecommerce.Services.WebApi.Modules.Swagger;
 using Pacagroup.Ecommerce.Services.WebApi.Modules.Authentication;
+using Serilog;
+using Pacagroup.Ecommerce.Transversal.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -90,6 +92,15 @@ builder.Services.AddInfrastructureServices();
 //
 // También registra AutoMapper y sus perfiles de mapeo.
 builder.Services.AddApplicationServices();
+
+
+// Configura Serilog como proveedor de logging de la aplicación.
+//
+// A partir de esta configuración, los mensajes registrados
+// mediante ILogger/IAppLogger y Serilog podrán ser procesados
+// por Serilog según la configuración definida para la aplicación.
+builder.Host.UseSerilog();
+
 
 
 /*
@@ -182,6 +193,14 @@ if (app.Environment.IsDevelopment())
 // MIDDLEWARES DEL PIPELINE HTTP
 // ============================================================
 
+// Registra automáticamente información de cada solicitud HTTP,
+// como el método, ruta, código de respuesta y duración.
+//
+// Esta información es procesada por Serilog y permite
+// realizar seguimiento de las peticiones realizadas a la API.
+app.UseSerilogRequestLogging();
+
+
 // Redirige automáticamente las solicitudes HTTP hacia HTTPS.
 app.UseHttpsRedirection();
 
@@ -233,4 +252,22 @@ app.MapControllers();
 
 // Inicia la aplicación y comienza a escuchar
 // las solicitudes HTTP.
-app.Run();
+try
+{
+    // Registra en Serilog que la aplicación está comenzando.
+    Log.Information("Starting Pacagroup.Ecommerce API");
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    // Registra un error crítico cuando la aplicación
+    // termina inesperadamente debido a una excepción.
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    // Libera los recursos utilizados por Serilog
+    // y garantiza que los mensajes pendientes sean enviados.
+    Log.CloseAndFlush();
+}
