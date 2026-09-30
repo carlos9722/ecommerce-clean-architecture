@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Pacagroup.Ecommerce.Application.DTO;
 using Pacagroup.Ecommerce.Application.Interface;
 using Pacagroup.Ecommerce.Transversal.Common;
@@ -13,7 +14,10 @@ namespace Pacagroup.Ecommerce.Services.WebApi.Controllers
     ///
     /// Actúa como punto de entrada de la API y delega las operaciones
     /// a la capa Application.
+    /// [Authorize] indica que todos los endpoints de este Controller
+    /// requieren un usuario autenticado.
     /// </summary>
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     [SwaggerTag("Operaciones relacionadas con Clientes")]

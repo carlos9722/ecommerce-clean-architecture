@@ -2,6 +2,7 @@ using Pacagroup.Ecommerce.Domain.Core;
 using Pacagroup.Ecommerce.Infrastructure.Repository;
 using Pacagroup.Ecommerce.Application.Main;
 using Pacagroup.Ecommerce.Services.WebApi.Modules.Swagger;
+using Pacagroup.Ecommerce.Services.WebApi.Modules.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -91,6 +92,25 @@ builder.Services.AddInfrastructureServices();
 builder.Services.AddApplicationServices();
 
 
+/*
+ * Registra y configura los servicios necesarios
+ * para la autenticación mediante JWT.
+ *
+ * builder.Configuration permite que AddAuth()
+ * pueda leer los valores relacionados con JWT
+ * desde appsettings.json, variables de entorno, etc.
+ *
+ * Ejemplo de configuración utilizada:
+ *
+ * "Jwt": {
+ *     "Key": "...",
+ *     "Issuer": "...",
+ *     "Audience": "..."
+ * }
+ */
+builder.Services.AddAuth(builder.Configuration);
+
+
 // ============================================================
 // CONFIGURACIÓN DE SWAGGER
 // ============================================================
@@ -175,6 +195,24 @@ app.UseHttpsRedirection();
 // La política permite cualquier origen, encabezado y método
 // según la configuración realizada anteriormente.
 app.UseCors("MiPoliticaCors");
+
+
+/*
+ * Activa el middleware de autenticación.
+ *
+ * Se encarga de comprobar las credenciales de autenticación
+ * de las solicitudes HTTP, en este caso mediante JWT.
+ *
+ * Por ejemplo, cuando una petición contiene:
+ *
+ * Authorization: Bearer <token>
+ *
+ * este middleware procesa el token y determina
+ * si la solicitud tiene un usuario autenticado.
+ *
+ * Debe ejecutarse antes de UseAuthorization().
+ */
+app.UseAuthentication();
 
 
 // Activa el middleware de autorización.

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Pacagroup.Ecommerce.Application.DTO;
 using Pacagroup.Ecommerce.Application.Interface;
 using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Pacagroup.Ecommerce.Services.WebApi.Controllers
 {
@@ -12,9 +14,12 @@ namespace Pacagroup.Ecommerce.Services.WebApi.Controllers
     ///
     /// Recibe las peticiones del cliente y delega la lógica
     /// a IAuthApplication.
-    ///
+    /// [Authorize] requiere token
+    /// Sin embargo, SignUp y SignIn tienen [AllowAnonymous],
+    /// por lo que esos dos endpoints son excepciones.
     /// El Controller no accede directamente a la base de datos.
     /// </summary>
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     [SwaggerTag("Operaciones de Autenticación")]
@@ -58,6 +63,7 @@ namespace Pacagroup.Ecommerce.Services.WebApi.Controllers
         /// 200 OK si el registro fue exitoso.
         /// 400 BadRequest si ocurrió un problema con el registro.
         /// </returns>
+        [AllowAnonymous]
         [HttpPost("SignUp")]
         [SwaggerOperation(Summary = "Registra un nuevo usuario")]
         public async Task<IActionResult> SignUpAsync(
@@ -117,6 +123,7 @@ namespace Pacagroup.Ecommerce.Services.WebApi.Controllers
         /// 200 OK si las credenciales son válidas.
         /// 401 Unauthorized si la autenticación falla.
         /// </returns>
+        [AllowAnonymous]
         [HttpPost("SignIn")]
         [SwaggerOperation(Summary = "Autentica un usuario y genera token")]
         public async Task<IActionResult> SignInAsync(

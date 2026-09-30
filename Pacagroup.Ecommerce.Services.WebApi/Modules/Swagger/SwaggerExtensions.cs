@@ -1,4 +1,5 @@
-﻿using Microsoft.OpenApi;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi;
 using System.Reflection;
 
 namespace Pacagroup.Ecommerce.Services.WebApi.Modules.Swagger
@@ -75,11 +76,19 @@ namespace Pacagroup.Ecommerce.Services.WebApi.Modules.Swagger
                 });
 
 
+                // =========================================================
+                // DOCUMENTACIÓN XML
+                // =========================================================
+
                 // Obtiene el nombre del ensamblado actual
                 // y le agrega la extensión ".xml".
                 //
-                // Este archivo XML contiene la documentación
-                // generada a partir de los comentarios XML del código.
+                // Ejemplo:
+                //
+                // Pacagroup.Ecommerce.Services.WebApi.xml
+                //
+                // Este archivo contiene la documentación generada
+                // a partir de los comentarios XML del código.
                 var xmlFile =
                     $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
 
@@ -97,16 +106,117 @@ namespace Pacagroup.Ecommerce.Services.WebApi.Modules.Swagger
                 // Indica a Swagger que incluya los comentarios XML
                 // de nuestro código dentro de la documentación.
                 //
-                // Esto permite que los comentarios /// <summary>
+                // Esto permite que los comentarios:
+                //
+                // /// <summary>
+                //
                 // de Controllers, métodos, parámetros, etc.,
                 // puedan aparecer en Swagger UI.
                 c.IncludeXmlComments(xmlPath);
 
 
+                // =========================================================
+                // CONFIGURACIÓN DE AUTENTICACIÓN JWT EN SWAGGER
+                // =========================================================
+
+                // Define cómo Swagger debe solicitar y enviar
+                // el token JWT.
+                //
+                // Esta configuración NO genera el JWT.
+                //
+                // El JWT lo genera JwtService.
+                //
+                // Aquí solamente le enseñamos a Swagger:
+                // "Existe una autenticación JWT y el token
+                // debe enviarse mediante el header Authorization".
+                var securityScheme = new OpenApiSecurityScheme
+                {
+                    // Nombre del header HTTP donde se enviará el token.
+                    //
+                    // Resultado:
+                    //
+                    // Authorization: Bearer <token>
+                    Name = "Authorization",
+
+                    // Texto que Swagger mostrará al usuario
+                    // explicando qué debe introducir.
+                    Description = "Enter JWT Bearer token **_only_**",
+
+                    // Indica que el token se enviará
+                    // dentro de los headers HTTP.
+                    In = ParameterLocation.Header,
+
+                    // Indica que estamos utilizando
+                    // un esquema HTTP de autenticación.
+                    Type = SecuritySchemeType.Http,
+
+                    // Especifica que utilizaremos el esquema Bearer.
+                    //
+                    // Bearer es la forma habitual de enviar
+                    // un JWT mediante el header Authorization.
+                    Scheme = "bearer",
+
+                    // Indica que el formato del token es JWT.
+                    BearerFormat = "JWT"
+                };
+
+
+                // Registra el esquema de seguridad en Swagger.
+                //
+                // JwtBearerDefaults.AuthenticationScheme
+                // normalmente contiene el nombre:
+                //
+                // "Bearer"
+                //
+                // Esto permite identificar esta configuración
+                // de autenticación dentro de Swagger.
+                c.AddSecurityDefinition(
+                    JwtBearerDefaults.AuthenticationScheme,
+                    securityScheme);
+
+
+                // Indica que los endpoints de la API pueden utilizar
+                // el esquema de autenticación JWT definido anteriormente.
+                //
+                // En otras palabras:
+                //
+                // AddSecurityDefinition
+                //      ↓
+                // "Así funciona mi autenticación JWT"
+                //
+                // AddSecurityRequirement
+                //      ↓
+                // "Esta autenticación puede ser requerida
+                //  para acceder a los endpoints"
+                c.AddSecurityRequirement(document =>
+                    new OpenApiSecurityRequirement
+                    {
+                        {
+                            // Referencia al esquema de seguridad
+                            // que registramos anteriormente.
+                            new OpenApiSecuritySchemeReference(
+                                JwtBearerDefaults.AuthenticationScheme,
+                                document,
+                                null),
+
+                            // Lista de scopes.
+                            //
+                            // En este caso no utilizamos OAuth2 scopes,
+                            // por eso queda vacía.
+                            []
+                        }
+                    });
+
+
                 // Habilita el uso de anotaciones de Swagger/OpenAPI.
                 //
-                // Permite utilizar atributos relacionados con Swagger
-                // para personalizar la documentación de los endpoints.
+                // Permite utilizar atributos como:
+                //
+                // [SwaggerTag(...)]
+                // [SwaggerOperation(...)]
+                //
+                // para personalizar la documentación
+                // de Controllers y endpoints.
                 c.EnableAnnotations();
             });
 
